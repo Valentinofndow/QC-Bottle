@@ -1,0 +1,44 @@
+<!-- templates/login.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1"> <!-- penting untuk mobile -->
+  <title>Login | PT Satya Solusindo Indonesia</title>
+  <!-- tambahkan ?v=1 untuk mencegah cache lama saat testing -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='login.css') }}?v=1">
+</head>
+<body>
+
+  <!-- ======== AREA UTAMA (KIRI: LOGO/TITLE | KANAN: FORM LOGIN) ======== -->
+  <div class="container">
+
+    <!-- KIRI: teks nama perusahaan -->
+    <div class="left">
+      <h1>PT SATYA<br>SOLUSINDO<br>INDONESIA</h1>
+    </div>
+
+    <!-- KANAN: kotak login -->
+    <div class="right">
+      <form class="login-box" method="POST">
+        <h2>Login</h2>
+
+        <!-- Muncul kalau login gagal -->
+        {% if error %}
+          <div class="error">{{ error }}</div>
+        {% endif %}
+
+        <!-- Input Username -->
+        <input type="text" name="username" placeholder="Username" required>
+
+        <!-- Input Password -->
+        <input type="password" name="password" placeholder="Password" required>
+
+        <!-- Tombol Login -->
+        <button type="submit">LOGIN</button>
+      </form>
+    </div>
+
+  </div>
+</body>
+</html>

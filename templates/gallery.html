@@ -1,0 +1,59 @@
+<!-- templates/gallery.html -->
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Gallery | Bottle QC</title>
+  <!-- pakai stylesheet utama biar warna/var konsisten -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='main.css') }}">
+  <!-- stylesheet khusus gallery -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='gallery.css') }}">
+</head>
+
+<body class="dark">
+  <!-- Topbar sama persis seperti halaman lain -->
+  <header class="topbar">
+    <h2>Defect Gallery</h2>
+    <nav>
+      <a href="/main">MAIN</a>
+      <a href="/analysis">ANALYSIS</a>
+      <a href="/gallery" class="active">GALLERY</a>
+      <a href="/logout">LOGOUT</a>
+    </nav>
+  </header>
+
+  <!-- Container dengan padding yang SAMA -->
+  <main class="gallery-container">
+    <section class="gallery-grid">
+      {% for d in defects %}
+        <article class="g-card">
+          <img src="{{ url_for('serve_captured', filename=d.image_path.split('/')[-1]) }}" alt="{{ d.category }}">
+          <div class="g-info">
+            <strong>{{ d.category }}</strong><br>
+            {{ d.timestamp }}<br>
+            <small>Confidence: {{ "%.2f"|format(d.confidence) }}</small>
+          </div>
+        </article>
+      {% else %}
+        <p class="empty-state">Belum ada defect yang terdeteksi.</p>
+      {% endfor %}
+    </section>
+  </main>
+  
+  <!-- Modal preview gambar -->
+  <div id="imgModal" class="img-modal hidden">
+    <div class="img-modal-content">
+      <img id="modalImg" src="" alt="Preview" />
+    </div>
+  </div>
+
+  <script src="{{ url_for('static', filename='gallery.js') }}"></script>
+
+  
+  <footer>
+    <p>© 2025 PT Satya Solusindo Indonesia | Bottle QC System</p>
+  </footer>
+
+</body>
+</html>

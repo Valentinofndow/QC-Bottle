@@ -1,0 +1,89 @@
+<!-- templates/analysis.html -->
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Analysis | Bottle QC</title>
+
+  <!-- pakai style dark yang sama + css khusus analysis -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='main.css') }}?v=3">
+  <link rel="stylesheet" href="{{ url_for('static', filename='analysis.css') }}?v=1">
+
+  <!-- Chart.js harus ada sebelum analysis.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="{{ url_for('static', filename='analysis.js') }}" defer></script>
+</head>
+<body class="dark">
+
+  <header class="topbar">
+    <h2>Quality Analysis</h2>
+    <nav>
+      <a href="/main">MAIN</a>
+      <a href="/analysis" class="active">ANALYSIS</a>
+      <a href="/gallery">GALLERY</a>
+      <a href="/logout">LOGOUT</a>
+    </nav>
+  </header>
+
+  <main class="ana-container">
+    <!-- KPI ringkas -->
+    <section class="ana-summary">
+      <div class="ana-card kpi">
+        <div class="kpi-label">GOOD</div>
+        <div id="kpi_good" class="kpi-value">0</div>
+      </div>
+      <div class="ana-card kpi">
+        <div class="kpi-label">DEFECT</div>
+        <div id="kpi_defect" class="kpi-value">0</div>
+      </div>
+      <div class="ana-card kpi">
+        <div class="kpi-label">% GOOD</div>
+        <div id="kpi_pct_good" class="kpi-value">0.00%</div>
+      </div>
+      <div class="ana-card kpi">
+        <div class="kpi-label">% DEFECT</div>
+        <div id="kpi_pct_def" class="kpi-value">0.00%</div>
+      </div>
+    </section>
+
+    <!-- dua chart -->
+    <section class="ana-row">
+      <div class="ana-card chart">
+        <div class="chart-title">Good vs Defect</div>
+        <canvas id="pieOverall"></canvas>
+      </div>
+
+      <div class="ana-card chart">
+        <div class="chart-title">Defect Breakdown</div>
+        <canvas id="barDefects"></canvas>
+      </div>
+    </section>
+
+    <!-- angka per kategori + last update -->
+    <section class="ana-breakdown ana-card">
+      <div class="bd-item">
+        <div class="bd-label">Touching Characters</div>
+        <div id="bd_touching" class="bd-value">0</div>
+      </div>
+      <div class="bd-item">
+        <div class="bd-label">Double Print</div>
+        <div id="bd_double" class="bd-value">0</div>
+      </div>
+      <div class="bd-item">
+        <div class="bd-label">Missing Text</div>
+        <div id="bd_missing" class="bd-value">0</div>
+      </div>
+      <div class="bd-item muted-sm">
+        <div class="bd-label">Last update</div>
+        <div id="last_update" class="bd-value-sm">—</div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <p>© 2025 PT Satya Solusindo Indonesia | Bottle QC System</p>
+  </footer>
+
+</body>
+</html>

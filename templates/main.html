@@ -1,0 +1,94 @@
+  <!-- templates/main.html -->
+  <!DOCTYPE html>
+  <html lang="id">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Dashboard | Bottle QC</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='main.css') }}?v=3">
+    <script src="{{ url_for('static', filename='script.js') }}" defer></script>
+  </head>
+  <body class="dark">
+
+    <header class="topbar">
+      <h2>Automated Bottle Quality Inspection</h2>
+      <nav>
+        <a href="/main" class="active">MAIN</a>
+        <a href="/analysis">ANALYSIS</a>
+        <a href="/gallery">GALLERY</a>
+        <a href="/logout">LOGOUT</a>
+      </nav>
+    </header>
+
+    <main class="main-container">
+      <!-- VIDEO + CAM BUTTONS (KANAN) -->
+      <section class="video-section card">
+        <div class="cam-buttons" role="toolbar" aria-label="Pilih kamera">
+          <button type="button" class="btn cam-btn active" data-cam="0">CAM 1</button>
+          <button type="button" class="btn cam-btn" data-cam="1">CAM 2</button>
+          <button type="button" class="btn cam-btn" data-cam="2">CAM 3</button>
+        </div>
+
+        <div class="video-box">
+          <img id="video" src="{{ url_for('video_feed') }}" alt="Live camera stream is unavailable">
+        </div>
+
+        <div class="video-meta">
+          <span id="camLabel">CAM 1</span>
+          <span id="streamStatus" class="muted">Checking...</span>
+        </div>
+      </section>
+
+      <!-- STATS (KIRI) -->
+      <aside class="stats-section">
+        <div class="stat-card good card">
+          <div class="label">GOOD</div>
+          <div id="good" class="value">0</div>
+        </div>
+
+        <div class="stat-card defect card">
+          <div class="label">DEFECT</div>
+          <div id="defect" class="value">0</div>
+        </div>
+
+        <div class="controls card">
+          <button type="button" id="refreshStats" class="btn">Refresh Stats</button>
+          <button type="button" id="resetDb" class="btn danger">Reset DB</button>
+          <!-- tempat status cooldown -->
+          <div id="resetStatus" class="muted" style="font-size:13px;margin-top:6px;"></div>
+        </div>
+      </aside>
+    </main>
+
+    <!-- MODAL RESET -->
+    <div id="resetModal" class="modal hidden">
+      <div class="modal-card">
+        <h3>Konfirmasi Reset Database</h3>
+        <p>Masukkan password admin untuk melanjutkan:</p>
+        <input id="resetPass" type="password" placeholder="Password">
+        <div id="modalMsg" class="muted" style="margin-top:6px;"></div>
+        <div class="modal-actions">
+          <button id="cancelReset" class="btn">Batal</button>
+          <button id="confirmReset" class="btn danger">Reset</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- MODAL KONFIRMASI KEDUA -->
+    <div id="confirmModal" class="modal hidden">
+      <div class="modal-card">
+        <h3>Konfirmasi Penghapusan</h3>
+        <p>Apakah Anda yakin ingin menghapus <b>semua data</b>?</p>
+        <div class="modal-actions">
+          <button id="cancelConfirm" class="btn">Batal</button>
+          <button id="confirmDelete" class="btn danger">Yakin</button>
+        </div>
+      </div>
+    </div>
+
+    <footer>
+      <p>© 2025 PT Satya Solusindo Indonesia | Bottle QC System</p>
+    </footer>
+
+  </body>
+  </html>

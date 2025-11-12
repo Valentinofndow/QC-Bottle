@@ -1,0 +1,111 @@
+/* static/login.css
+   Styling khusus untuk halaman login (gelap, elegan).
+   Letakkan file ini di folder: <project-root>/static/login.css
+*/
+
+* {
+  box-sizing: border-box; /* Penting: agar padding tidak menambah lebar elemen */
+}
+
+/* ======== BODY ======== */
+body {
+    margin: 0;
+    padding: 0;
+    background-color: #0f0f0f;                /* Warna background halaman keseluruhan (gelap elegan) */
+    color: #fff;                              /* Warna teks default */
+    font-family: "Inter", Arial, sans-serif;    /* Font modern */
+    display: flex;
+    justify-content: center;                    /* Posisi horizontal di tengah */
+    align-items: center;                        /* Posisi vertikal di tengah */
+    height: 100vh;                              /* Tinggi halaman = tinggi layar */
+}
+
+/* ======== LAYOUT UTAMA ======== */
+.container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 80%;             /* Lebar area konten */
+    max-width: 1100px;      /* Batas maksimal biar gak terlalu lebar di monitor gede */
+    }
+
+/* ======== TEKS KIRI ======== */
+.left h1 {
+    font-size: 3.8rem;    /* Ukuran teks besar */
+    font-weight: 800;     /* Tebal banget, biar kesan kuat */
+    line-height: 1.2;     /* Jarak antarbaris biar proporsional */
+}
+
+/* ======== CARD LOGIN ======== */
+.right {
+    background-color: #1a1a1a;                  /* Warna dasar card */
+    padding: 40px;                                /* Ruang dalam */
+    border-radius: 14px;                          /* Sudut membulat */
+    box-shadow: 0 0 20px rgba(0,0,0,0.4);       /* Efek bayangan lembut */
+    width: 340px;                                 /* Lebar tetap card */
+}
+
+/* ======== FORM LOGIN ======== */
+.login-box {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.login-box h2 {
+  text-align: center;
+  color: #eee;
+  font-weight: 600;
+  margin: 0;
+}
+
+/* ======== INPUT BOX (USERNAME & PASSWORD) ======== */
+.login-box input {
+    width: 100%;                          /* Biar sejajar dan memenuhi lebar box */
+    padding: 12px 14px;                   /* Ruang dalam (atas-bawah, kiri-kanan) */
+    border: none;                         /* Hilangkan garis default */
+    border-radius: 8px;                   /* Sudut lembut */
+    background-color: #2a2a2a;          /* Warna latar input */
+    color: #fff;                        /* Warna teks di dalam input */
+    font-size: 14px;
+}
+
+/* ======== EFEK FOCUS (saat klik ke input) ======== */
+.login-box input:focus {
+  outline: 2px solid #6a5acd; /* highlight saat fokus */
+}
+
+/* ======== BUTTON LOGIN ======== */
+.login-box button {
+    width: 100%;                        /* Sama lebar dengan input di atasnya */
+    padding: 12px;
+    border: none;
+    border-radius: 8px;
+    background-color: #0e0e0f;        /* Warna dasar tombol */
+    color: #fff;                      /* Warna teks tombol */
+    font-weight: bold;
+    cursor: pointer;                    /* Ubah kursor jadi tangan */
+    font-size: 15px;
+    transition: background 0.2s;        /* Efek transisi saat hover */
+    display: block;                     /* pastikan tombol block-level */
+}
+
+/* ======== EFEK SAAT HOVER (tombol diarahin kursor) ======== */
+.login-box button:hover {
+  background-color: #616366;
+}
+
+/* ======== PESAN ERROR (misal login gagal) ======== */
+.error {
+  color: #ff6b6b;
+  font-size: 14px;
+  text-align: center;
+  margin-bottom: 10px;
+}
+
+/* Responsif sederhana */
+@media (max-width: 800px) {
+  .container { width: 92%; flex-direction: column; gap: 24px; }
+  .left h1 { font-size: 2.2rem; text-align:center; }
+  .right { width: 100%; padding: 28px; }
+}
