@@ -29,6 +29,7 @@ Sistem ini dikembangkan sebagai bagian dari program magang untuk melakukan inspe
 ---
 
 ## 📁 Struktur Folder
+```
 📦 Project/
 ┣ 📂 dataset
 ┣ 📂 model
@@ -39,6 +40,7 @@ Sistem ini dikembangkan sebagai bagian dari program magang untuk melakukan inspe
 ┣ 🐍 models.py
 ┣ 📄 requirements.txt
 ┗ 📄 README.md
+```
 
 > Catatan: Folder seperti `venv/`, `__pycache__/`, `model/runs/`, dan file berat seperti `.pt` tidak disertakan di repository.
 
