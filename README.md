@@ -67,28 +67,43 @@ python app.py
 ---
 
 ## 🛠 Git Workflow (Supaya Tidak Mem-Push venv)
-Repo ini sudah menggunakan .gitignore untuk menghindari commit ke file yang tidak diperlukan seperti venv/.
+
+Repo ini sudah menggunakan `.gitignore` untuk menghindari commit ke file yang tidak diperlukan seperti `venv/`.
 
 Gunakan alur berikut saat update project:
-🔹 Menambahkan file baru
-        ```sh
-        git add <nama_file>
-        git commit -m "Add new feature or file"
-        git push
-        ```
-🔹 Update file existing
-        ```sh
-        git add -u
-        git commit -m "Update logic or fix bug"
-        git push
-        ```
-🔹 Update dependency (setelah install library baru)
-        ```sh
-        pip freeze > requirements.txt
-        git add requirements.txt
-        git commit -m "Update dependencies"
-        git push
-        ```
+
+---
+
+### 🔹 Menambahkan file baru
+
+```sh
+git add <nama_file>
+git commit -m "Add new feature or file"
+git push
+```
+
+---
+
+### 🔹 Update file existing
+
+```sh
+git add -u
+git commit -m "Update logic or fix bug"
+git push
+```
+
+---
+
+### 🔹 Update dependency (setelah install library baru)
+
+```sh
+pip freeze > requirements.txt
+git add requirements.txt
+git commit -m "Update dependencies"
+git push
+```
+
+---
 
 
 ## 👤 Author
