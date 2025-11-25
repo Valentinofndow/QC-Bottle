@@ -110,5 +110,5 @@ git push
 
 ## 👤 Author
 
-Valentino Fernando
+**Valentino Fernando**  
 Electrical Engineering – Universitas Multimedia Nusantara
