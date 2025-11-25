@@ -63,10 +63,10 @@ Fast R-CNN digunakan sebagai baseline pembanding performa deteksi.
 ```sh
 pip install -r requirements.txt
 python app.py
-
+```
 ---
 
-🛠 Git Workflow (Supaya Tidak Mem-Push venv)
+## 🛠 Git Workflow (Supaya Tidak Mem-Push venv)
 Repo ini sudah menggunakan .gitignore untuk menghindari commit ke file yang tidak diperlukan seperti venv/.
 
 Gunakan alur berikut saat update project:
