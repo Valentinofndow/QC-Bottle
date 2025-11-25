@@ -71,21 +71,27 @@ Repo ini sudah menggunakan .gitignore untuk menghindari commit ke file yang tida
 
 Gunakan alur berikut saat update project:
 🔹 Menambahkan file baru
+        ```sh
         git add <nama_file>
         git commit -m "Add new feature or file"
-        git push    
+        git push
+        ```
 🔹 Update file existing
+        ```sh
         git add -u
         git commit -m "Update logic or fix bug"
         git push
+        ```
 🔹 Update dependency (setelah install library baru)
+        ```sh
         pip freeze > requirements.txt
         git add requirements.txt
         git commit -m "Update dependencies"
         git push
+        ```
 
 
-👤 Author
+## 👤 Author
 
 Valentino Fernando
 Electrical Engineering – Universitas Multimedia Nusantara
