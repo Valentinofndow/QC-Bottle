@@ -1,18 +1,63 @@
-// static/script.js — DASHBOARD UTAMA
-// update data GOOD/DEFECT di main.html
+// static/script.js — DASHBOARD UTAMA (dengan lamp virtual)
 
+// helper
 const el = (id) => document.getElementById(id);
 let pollingActive = true;
 document.addEventListener("visibilitychange", () => (pollingActive = !document.hidden));
-let ctl = { stats: null };  
 
-// fungsi bantu
+// controllers untuk AbortController
+let ctl = { stats: null, lamp: null };
+
+// util: set text safely
 function setText(id, v) {
   const n = el(id);
   if (n) n.textContent = v;
 }
 
-// fungsi ambil data /stats
+// minimal toast (fungsi sederhana, pakai kalau mau notifikasi)
+function showToast(msg, type = "info") {
+  const rootId = "__toast_root__";
+  let root = document.getElementById(rootId);
+  if (!root) {
+    root = document.createElement("div");
+    root.id = rootId;
+    root.style.position = "fixed";
+    root.style.right = "18px";
+    root.style.bottom = "18px";
+    root.style.zIndex = 99999;
+    document.body.appendChild(root);
+  }
+  const t = document.createElement("div");
+  t.textContent = msg;
+  t.style.marginTop = "8px";
+  t.style.padding = "10px 14px";
+  t.style.borderRadius = "8px";
+  t.style.boxShadow = "0 6px 18px rgba(0,0,0,0.4)";
+  t.style.color = "#fff";
+  t.style.fontSize = "13px";
+  t.style.opacity = "0";
+  t.style.transition = "opacity .18s ease, transform .18s ease";
+  if (type === "success") { t.style.background = "#2e7d32"; }
+  else if (type === "error") { t.style.background = "#c62828"; }
+  else { t.style.background = "#333"; }
+
+  root.appendChild(t);
+  // show
+  requestAnimationFrame(() => {
+    t.style.opacity = "1";
+    t.style.transform = "translateY(-4px)";
+  });
+  // auto-remove
+  setTimeout(() => {
+    t.style.opacity = "0";
+    t.style.transform = "translateY(0)";
+    setTimeout(() => root.removeChild(t), 220);
+  }, 2200);
+}
+
+// -------------------------------
+// STATS (GOOD / DEFECT)
+// -------------------------------
 async function updateStats() {
   if (!pollingActive) return;
   try {
@@ -27,31 +72,49 @@ async function updateStats() {
     const good = d.good ?? 0;
     const defect = d.defect ?? 0;
 
-    // update angka ke elemen di main.html
     setText("good", good);
     setText("defect", defect);
-
   } catch (err) {
-    console.warn("updateStats error:", err);
+    // silent fail-ish — jangan spam console
+    // console.warn("updateStats error:", err);
   } finally {
     ctl.stats = null;
   }
 }
 
-// refresh otomatis tiap 2 detik
-updateStats();
-setInterval(updateStats, 2000);
+// -------------------------------
+// LAMP POLLING (virtual lamp)
+// -------------------------------
+async function pollLampState() {
+  if (!pollingActive) return;
+  try {
+    if (ctl.lamp) ctl.lamp.abort();
+    ctl.lamp = new AbortController();
 
-// tombol manual refresh (opsional)
-const refreshBtn = el("refreshStats");
-if (refreshBtn) refreshBtn.addEventListener("click", updateStats);
+    const res = await fetch(`/lamp_state?t=${Date.now()}`, { signal: ctl.lamp.signal });
+    if (!res.ok) return;
+    const d = await res.json();
+    const lampOn = Boolean(d.lamp);
+    const bulb = el("lampBulb");
+    if (bulb) {
+      bulb.classList.toggle("on", lampOn);
+      // optional: update aria/state text
+      bulb.setAttribute("aria-pressed", lampOn ? "true" : "false");
+    }
+  } catch (err) {
+    // ignore transient errors
+  } finally {
+    ctl.lamp = null;
+  }
+}
 
-
-// === CAMERA SWITCH + STATUS HANDLER ===
+// -------------------------------
+// CAMERA SWITCH + STATUS
+// -------------------------------
 const camButtons = document.querySelectorAll(".cam-btn");
-const camLabel = document.getElementById("camLabel");
-const streamStatus = document.getElementById("streamStatus");
-const video = document.getElementById("video");
+const camLabel = el("camLabel");
+const streamStatus = el("streamStatus");
+const video = el("video");
 
 // ubah kamera aktif
 async function switchCamera(index) {
@@ -60,106 +123,122 @@ async function switchCamera(index) {
     const data = await res.json();
 
     if (!res.ok || !data.ok) {
-      streamStatus.textContent = data.msg || "Disconnected";
-      streamStatus.style.color = "#ff4444";
+      if (streamStatus) {
+        streamStatus.textContent = data.msg || "Disconnected";
+        streamStatus.style.color = "#ff4444";
+      }
       return;
     }
 
-    camLabel.textContent = `CAM ${index + 1}`;
-    streamStatus.textContent = data.msg || "Connected";
-    streamStatus.style.color = "#7CFC00"; // hijau terang
-    video.src = "/video_feed?t=" + Date.now(); // refresh stream
+    if (camLabel) camLabel.textContent = `CAM ${index + 1}`;
+    if (streamStatus) {
+      streamStatus.textContent = data.msg || "Connected";
+      streamStatus.style.color = "#7CFC00"; // hijau terang
+    }
+    if (video) video.src = "/video_feed?t=" + Date.now(); // refresh stream
   } catch (err) {
-    streamStatus.textContent = "Server unreachable";
-    streamStatus.style.color = "#ff4444";
+    if (streamStatus) {
+      streamStatus.textContent = "Server unreachable";
+      streamStatus.style.color = "#ff4444";
+    }
   }
 }
 
-// update tombol aktif
 function setActiveButton(index) {
+  if (!camButtons || camButtons.length === 0) return;
   camButtons.forEach(btn => btn.classList.remove("active"));
-  camButtons[index].classList.add("active");
+  const btn = camButtons[index];
+  if (btn) btn.classList.add("active");
 }
 
-// event listener tombol kamera
-camButtons.forEach(btn => {
-  btn.addEventListener("click", () => {
-    const index = parseInt(btn.dataset.cam);
-    setActiveButton(index);
-    switchCamera(index);
+if (camButtons && camButtons.length) {
+  camButtons.forEach(btn => {
+    btn.addEventListener("click", () => {
+      const index = parseInt(btn.dataset.cam);
+      setActiveButton(index);
+      switchCamera(index);
+    });
   });
-});
+}
 
-// === STATUS MONITORING ===
+// -------------------------------
+// STATUS MONITORING
+// -------------------------------
 async function checkCameraStatus() {
   try {
     const res = await fetch("/camera_status?t=" + Date.now());
     const data = await res.json();
     if (data.ok) {
-      streamStatus.textContent = data.msg;
-      streamStatus.style.color = "#7CFC00";
+      if (streamStatus) {
+        streamStatus.textContent = data.msg;
+        streamStatus.style.color = "#7CFC00";
+      }
     } else {
-      streamStatus.textContent = data.msg || "Disconnected";
-      streamStatus.style.color = "#ff4444";
+      if (streamStatus) {
+        streamStatus.textContent = data.msg || "Disconnected";
+        streamStatus.style.color = "#ff4444";
+      }
     }
   } catch {
-    streamStatus.textContent = "Koneksi server gagal";
-    streamStatus.style.color = "#ff4444";
+    if (streamStatus) {
+      streamStatus.textContent = "Koneksi server gagal";
+      streamStatus.style.color = "#ff4444";
+    }
   }
 }
 
-
-// === MODAL RESET HANDLER (2 STEP: PASSWORD + KONFIRMASI) ===
+// -------------------------------
+// MODAL RESET HANDLER (2 STEP)
+// -------------------------------
 document.addEventListener("DOMContentLoaded", () => {
-  const resetBtn = document.getElementById("resetDb");
-  const resetModal = document.getElementById("resetModal");
-  const confirmModal = document.getElementById("confirmModal");
+  const resetBtn = el("resetDb");
+  const resetModal = el("resetModal");
+  const confirmModal = el("confirmModal");
 
-  const cancelResetBtn = document.getElementById("cancelReset");
-  const confirmResetBtn = document.getElementById("confirmReset");
-  const resetPass = document.getElementById("resetPass");
-  const modalMsg = document.getElementById("modalMsg");
+  const cancelResetBtn = el("cancelReset");
+  const confirmResetBtn = el("confirmReset");
+  const resetPass = el("resetPass");
+  const modalMsg = el("modalMsg");
 
-  const cancelConfirmBtn = document.getElementById("cancelConfirm");
-  const confirmDeleteBtn = document.getElementById("confirmDelete");
+  const cancelConfirmBtn = el("cancelConfirm");
+  const confirmDeleteBtn = el("confirmDelete");
 
-  // variabel global buat simpen password yang udah divalidasi
   let validPass = "";
 
-  // buka modal password pertama
   if (resetBtn) {
     resetBtn.addEventListener("click", () => {
-      resetModal.classList.remove("hidden");
-      resetPass.value = "";
-      modalMsg.textContent = "";
-      resetPass.focus();
-    });
-  }
-
-  // tutup modal password
-  if (cancelResetBtn) {
-    cancelResetBtn.addEventListener("click", () => {
-      resetModal.classList.add("hidden");
-    });
-  }
-
-  // enter = klik tombol konfirmasi
-  if (resetPass) {
-    resetPass.addEventListener("keydown", (e) => {
-      if (e.key === "Enter") {
-        e.preventDefault();
-        confirmResetBtn.click();
+      if (resetModal) {
+        resetModal.classList.remove("hidden");
+        if (resetPass) resetPass.value = "";
+        if (modalMsg) modalMsg.textContent = "";
+        if (resetPass) resetPass.focus();
       }
     });
   }
 
-  // tahap 1: cek password admin
+  if (cancelResetBtn) {
+    cancelResetBtn.addEventListener("click", () => {
+      if (resetModal) resetModal.classList.add("hidden");
+    });
+  }
+
+  if (resetPass) {
+    resetPass.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") {
+        e.preventDefault();
+        if (confirmResetBtn) confirmResetBtn.click();
+      }
+    });
+  }
+
   if (confirmResetBtn) {
     confirmResetBtn.addEventListener("click", async () => {
-      const pass = resetPass.value.trim();
+      const pass = (resetPass && resetPass.value.trim()) || "";
       if (!pass) {
-        modalMsg.textContent = "Password tidak boleh kosong.";
-        modalMsg.style.color = "#ff5555";
+        if (modalMsg) {
+          modalMsg.textContent = "Password tidak boleh kosong.";
+          modalMsg.style.color = "#ff5555";
+        }
         return;
       }
 
@@ -169,62 +248,65 @@ document.addEventListener("DOMContentLoaded", () => {
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ key: pass, checkOnly: true })
         });
-
         const data = await res.json();
 
         if (data.ok) {
-          // simpan password yang valid
           validPass = pass;
-          resetModal.classList.add("hidden");
-          confirmModal.classList.remove("hidden");
+          if (resetModal) resetModal.classList.add("hidden");
+          if (confirmModal) confirmModal.classList.remove("hidden");
         } else {
-          modalMsg.textContent = "Password salah.";
-          modalMsg.style.color = "#ff5555";
+          if (modalMsg) {
+            modalMsg.textContent = "Password salah.";
+            modalMsg.style.color = "#ff5555";
+          }
         }
       } catch (err) {
-        modalMsg.textContent = "Server tidak merespons.";
-        modalMsg.style.color = "#ff5555";
+        if (modalMsg) {
+          modalMsg.textContent = "Server tidak merespons.";
+          modalMsg.style.color = "#ff5555";
+        }
       }
     });
   }
 
-  // batal konfirmasi tahap 2
   if (cancelConfirmBtn) {
     cancelConfirmBtn.addEventListener("click", () => {
-      confirmModal.classList.add("hidden");
+      if (confirmModal) confirmModal.classList.add("hidden");
     });
   }
 
-  // tahap 2: eksekusi penghapusan final
   if (confirmDeleteBtn) {
     confirmDeleteBtn.addEventListener("click", async () => {
-      console.log("🟡 Tombol Yakin ditekan — kirim request reset...");
       try {
         const res = await fetch("/reset", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ key: validPass, checkOnly: false })
         });
-
         const data = await res.json();
 
         if (data.ok) {
-          console.log("✅ Reset berhasil");
-          confirmModal.classList.add("hidden");
+          if (confirmModal) confirmModal.classList.add("hidden");
           showToast("✅ Semua data berhasil dihapus!", "success");
-          setTimeout(() => location.reload(), 1500);
+          setTimeout(() => location.reload(), 900);
         } else {
-          console.warn("❌ Reset gagal:", data);
           showToast("❌ Gagal menghapus data", "error");
         }
       } catch (err) {
-        console.error("⚠️ Error saat reset:", err);
         showToast("⚠️ Server error", "error");
       }
     });
   }
 
-  // cek status kamera tiap 2 detik
-  setInterval(checkCameraStatus, 2000);
+  // initial UI setup
+  setActiveButton(0);
+  // start polling (safe after DOMContentLoaded)
+  updateStats();
+  pollLampState();
   checkCameraStatus();
+
+  // intervals
+  setInterval(updateStats, 2000);   // stats every 2s
+  setInterval(pollLampState, 500);  // lamp check every 0.5s (fast visual feedback)
+  setInterval(checkCameraStatus, 2000);
 });

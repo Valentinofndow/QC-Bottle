@@ -1,19 +1,18 @@
-/* static/gallery.css — sejajar dengan main & analysis */
+/* static/gallery.css */
 
 /* Container utama */
 .gallery-container {
-  padding: 28px 40px 60px; /* sama kayak main & analysis */
-  min-height: calc(100vh - 140px); /* tinggi dinamis, biar footer gak nutup isi */
+  padding: 28px 40px 60px;
+  height: calc(100vh - 140px); /* FIX: height pasti */
   display: flex;
   flex-direction: column;
-  justify-content: flex-start;
   gap: 24px;
   box-sizing: border-box;
-  overflow-y: auto; /* aktifin scroll cuma kalau bener-bener butuh */
+  overflow-y: auto; /* scroll jalan */
 }
 
 /* Grid untuk kartu foto */
-.gallery-container .gallery-grid {
+.gallery-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
   gap: 16px;
@@ -33,6 +32,7 @@
   transform: translateY(-2px);
   box-shadow: 0 10px 28px rgba(0,0,0,0.6);
 }
+
 .g-card img {
   width: 100%;
   height: 180px;
@@ -46,8 +46,8 @@
   color: var(--muted);
 }
 
-/* Empty state (kalau gak ada data) */
-.gallery-container .empty-state {
+/* Empty state */
+.empty-state {
   grid-column: 1 / -1;
   text-align: center;
   color: var(--muted);
@@ -56,7 +56,7 @@
   opacity: 0.9;
 }
 
-/* === FULLSCREEN IMAGE MODAL === */
+/* Fullscreen Modal */
 .img-modal {
   position: fixed;
   inset: 0;
@@ -82,30 +82,28 @@
   width: 100%;
   height: 100%;
   object-fit: contain;
-  display: block;
 }
 
-/* Reset global */
+/* Reset global — FIX: Jangan matiin scroll global */
 html, body {
   margin: 0;
   padding: 0;
   height: 100%;
-  overflow-x: hidden;
+  overflow: hidden;
+  /* overflow-y: visible; DEFAULT */
 }
 
-/* --- Anti-scroll nyeleneh fix --- */
-html, body {
-  overflow-y: hidden; /* matiin scroll global */
-}
-.gallery-container {
-  overflow-y: auto; /* scroll cuma kalau konten tinggi banget */
-}
-
-/* Responsif */
+/* Responsive */
 @media (max-width: 720px) {
-  .gallery-container { padding: 20px; }
-  .gallery-grid { grid-template-columns: 1fr 1fr; }
+  .gallery-container {
+    padding: 20px;
+  }
+  .gallery-grid {
+    grid-template-columns: 1fr 1fr;
+  }
 }
 @media (max-width: 520px) {
-  .gallery-grid { grid-template-columns: 1fr; }
+  .gallery-grid {
+    grid-template-columns: 1fr;
+  }
 }

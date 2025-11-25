@@ -131,27 +131,30 @@ def get_recent_defects(limit=50):
 
 def get_defect_breakdown():
     """
-    Get breakdown defect per kategori
-    
-    Returns:
-        dict: {
-            'Double_Print': int,
-            'Missing_Text': int,
-            'Touching_Characters': int
-        }
+    Get breakdown defect per kategori.
+    Selalu kembalikan semua kategori (0 jika tidak ada datanya).
     """
     from sqlalchemy import func
-    
+
+    # Daftar kategori defect yang kita pakai di sistem
     defect_categories = ['Double_Print', 'Missing_Text', 'Touching_Characters']
-    
+
+    # Query hitung jumlah per kategori yang ada di DB
     rows = db.session.query(
         Bottle.category,
         func.count(Bottle.id)
     ).filter(
         Bottle.category.in_(defect_categories)
     ).group_by(Bottle.category).all()
-    
-    return {category: count for category, count in rows}
+
+    # Convert hasil ke dict
+    row_map = {category: int(count) for category, count in rows}
+
+    # Lengkapi kategori yang tidak muncul dengan 0
+    full_breakdown = {cat: row_map.get(cat, 0) for cat in defect_categories}
+
+    return full_breakdown
+
 
 
 # ============================================================================
